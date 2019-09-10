@@ -48,7 +48,7 @@ def show_stats(opponent_board):
 	as_error("You missed {} times.".format(total_miss))
 	as_info("You had {} hit.".format(total_hit))
 
-def print_board(s, board):
+def print_board(s, board, is_show_ship=False):
 	global is_cheating
 	dimension = len(board) - 1
 	player = "Computer"
@@ -395,13 +395,16 @@ def main():
 			rematch()
 			break
 
-		print_board("c", user2_board)
+		if player_count==2:
+			print_board("User 2",user2_board)  
+		else:
+			print_board("c", user2_board)
 		input("Press ENTER to continue")
 		clear_console()
 		if player_count == 2:
 			as_info('Its User 2 turn!')
-			print_board("User 2",user2_board)
-		
+			print_board("User 2",user_board)
+			user_board=user_move(user_board)
 		else:
 			user_board = computer_move(user_board)
 

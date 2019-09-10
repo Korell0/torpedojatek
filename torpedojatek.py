@@ -70,7 +70,7 @@ def print_board(s, board):
 		for j in range(dimension):
 			if board[i][j] == -1:
 				row_string += "   "
-			elif s == "u" or s== "u2":
+			elif s != "c":
 				if board[i][j] == "*":
 					row_string +=' ' + blue(board[i][j] + ' ')
 				elif board[i][j] == "$":
@@ -116,7 +116,7 @@ def user_place_ships(board, ships, user_name):
 			if user_input.lower() == "y":
 				clear_console()
 				board = automatically_place_ships(board, without_keys(ships, placed_ships), "You")
-				print_board('u', board)
+				print_board(user_name, board)
 				input("Press ENTER to continue")
 				return board
 	
@@ -140,12 +140,12 @@ def user_place_ships(board, ships, user_name):
 		clear_console()
 		board = place_ship(board, ships[ship], ship[0], ori, x, y)
 		placed_ships.append(ship)
-		print_board("u", board)
+		print_board(user_name, board)
 		
 		
 	clear_console()
 	as_info("You placed all of your ships.")
-	print_board("u", board)
+	print_board(user_name, board)
 	input("Press ENTER to start the game")
 	return board
 
@@ -381,14 +381,16 @@ def main():
 
 	while True:
 		clear_console()
-		as_info('Your turn!')
-		print_board("c", user2_board)
+		as_info("User 1's turn")
 		
-			
+		if player_count ==2:
+			print_board("User 2",user2_board)
+		else:
+			print_board("c", user2_board)
 			
 		user2_board = user_move(user2_board)
 		if check_win(user2_board):
-			as_success("YOU WON :)")
+			as_success("User 1 WON :)")
 			show_stats(user2_board)
 			rematch()
 			break
@@ -398,18 +400,21 @@ def main():
 		clear_console()
 		if player_count == 2:
 			as_info('Its User 2 turn!')
-			print_board("u2",user2_board)
+			print_board("User 2",user2_board)
 		
 		else:
 			user_board = computer_move(user_board)
 
 		if user_board == "WIN":
-			as_error("The Computer have won :(")
+			if player_count==2:
+				as_success("User 2 have won :(")
+			else:
+				as_error("The Computer have won :(")
 			show_stats(user2_board)
 			rematch()
 			break
 
-		print_board("u", user_board)
+		print_board("User", user_board)
 		should_cheat = getpass("Press ENTER to continue")
 
 		if should_cheat.lower() == "map":

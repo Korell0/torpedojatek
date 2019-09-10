@@ -336,7 +336,7 @@ def main():
 	clear_console()
 	
 	player_count = input('Do You want to play against an another player (Y/N)? ').upper()
-	if player_count = "Y"
+	if player_count == "Y":
 		player_count=2
 	else:
 		player_count=1	
@@ -376,7 +376,7 @@ def main():
 
 	while True:
 		clear_console()
-		if player_count = 2
+		if player_count == 2:
 			as_info('Its the other User turn!')
 		else:
 			as_info('Your turn!')

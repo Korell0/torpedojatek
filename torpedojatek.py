@@ -5,6 +5,8 @@ abc = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'
 
 is_cheating = False
 
+player_count=1
+
 def green(input):
 	return '\033[1;32;32m'+input+'\033[0m'
 
@@ -51,10 +53,8 @@ def print_board(s, board):
 	dimension = len(board) - 1
 	player = "Computer"
 
-	if s == "u":
-		player = "User"
-	if s == "u2":
-		player = "User 2"
+	if s != "c":
+		player = s	
 
 	print("The " + player + "'s table looks like this: \n")
 
@@ -105,20 +105,33 @@ def print_board(s, board):
 def without_keys(dictionary, keys):
 	return {x: dictionary[x] for x in dictionary if x not in keys}
 
-def user_place_ships(board, ships):
+def user_place_ships(board, ships, user_name):
 	placed_ships = []
 	dimension = len(board) - 1
+	
+	if len(placed_ships) != len(ships.keys()):
+			as_info("Would You like to place your remaining ships randomly? (Y/N) ")
+			user_input = input()
 
+			if user_input.lower() == "y":
+				clear_console()
+				board = automatically_place_ships(board, without_keys(ships, placed_ships), "You")
+				print_board('u', board)
+				input("Press ENTER to continue")
+				return board
+	
 	for ship in ships.keys():
 		valid = False
 
 		while not valid:
 			clear_console()
-			print_board("u", board)
+			
+			print_board(user_name, board)
 			as_info("Placing {} (length: {})".format(ship, ships[ship]))
 			x, y = get_coordinate(dimension)
 			ori = v_or_h()
 			valid = validate(board, ships[ship], x, y, ori)
+
 
 			if not valid:
 				as_error("You can't put a ship there.")
@@ -129,17 +142,7 @@ def user_place_ships(board, ships):
 		placed_ships.append(ship)
 		print_board("u", board)
 		
-		if len(placed_ships) != len(ships.keys()):
-			as_info("Would You like to place your remaining ships randomly? (Y/N) ")
-			user_input = input()
-
-			if user_input.lower() == "y":
-				clear_console()
-				board = automatically_place_ships(board, without_keys(ships, placed_ships), "You")
-				print_board('u', board)
-				input("Press ENTER to continue")
-				return board
-
+		
 	clear_console()
 	as_info("You placed all of your ships.")
 	print_board("u", board)
@@ -324,6 +327,7 @@ def rematch():
 
 def main():
 	global is_cheating
+	global player_count
 	ships = {
 		"Aircraft Carrier" : 5,
 		"Battleship" : 4,
@@ -338,10 +342,11 @@ def main():
 	player_count = input('Do You want to play against an another player (Y/N)? ').upper()
 	if player_count == "Y":
 		player_count=2
+		
 	else:
 		player_count=1	
 	while True:
-		dimension = int(input("How big of a map do you want (between 6-15)? "))
+		dimension = 10 #int(input("How big of a map do you want (between 6-15)? "))
 
 		if dimension < 6 or 15 < dimension:
 			as_error('Invalid map size!')
@@ -363,26 +368,25 @@ def main():
 	user_board.append(copy.deepcopy(ships))
 	user2_board.append(copy.deepcopy(ships))
 
-	user_board = user_place_ships(user_board, ships)
+	user_board = user_place_ships(user_board, ships,"User")
 
 	
 
 	if player_count == 2:
 		as_info("User 2 is placing the ships now.")
-		user2_board = user_place_ships(user2_board, ships)
+		user2_board = user_place_ships(user2_board, ships, "User 2")
 		
 	else:
 		user2_board = automatically_place_ships(user2_board, ships)
 
 	while True:
 		clear_console()
-		if player_count == 2:
-			as_info('Its the other User turn!')
-		else:
-			as_info('Your turn!')
-			print_board("c", user2_board)
-			user2_board = user_move(user2_board)
+		as_info('Your turn!')
+		print_board("c", user2_board)
 		
+			
+			
+		user2_board = user_move(user2_board)
 		if check_win(user2_board):
 			as_success("YOU WON :)")
 			show_stats(user2_board)
@@ -392,8 +396,12 @@ def main():
 		print_board("c", user2_board)
 		input("Press ENTER to continue")
 		clear_console()
-
-		user_board = computer_move(user_board)
+		if player_count == 2:
+			as_info('Its User 2 turn!')
+			print_board("u2",user2_board)
+		
+		else:
+			user_board = computer_move(user_board)
 
 		if user_board == "WIN":
 			as_error("The Computer have won :(")

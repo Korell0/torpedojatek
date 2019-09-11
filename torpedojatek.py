@@ -4,8 +4,21 @@ from datetime import datetime
 abc = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P')
 
 is_cheating = False
-
 player_count=1
+
+def main_screen():
+	clear_console()
+	while True:
+		print("1.Singleplayer")
+		print("2.Player VS Player")
+		print("3.Scoreboard")
+		menu_option=input(blue("Please type a number between 1-3 to select an option: "))
+		if str(menu_option).isnumeric() and int(menu_option)>0 and int(menu_option)<4:
+			clear_console()
+			return int(menu_option)
+		else:
+			clear_console()
+			as_error("Choose a NUMBER between 1-3")
 
 def green(input):
 	return '\033[1;32;32m'+input+'\033[0m'
@@ -326,37 +339,12 @@ def save_score(winning_player,all_rounds):
 	with open("score.txt","a") as f:
 		f.write(datetime.now().strftime("%Y/%m/%d %H:%M:%S")+" "+winning_player+" "+str(all_rounds)+"\n")
 
-def main():
-	global is_cheating
-	global player_count
-	ships = {
-		#"Aircraft Carrier" : 5,
-		#"Battleship" : 4,
-		#"Submarine" : 3,
-		#"Destroyer" : 3,
-		"Patrol" : 2
-	}
+def get_player(user_board, ships):
+	player_name=input("Give us your name...")
+	user_place_ships(user_board, ships,player_name)
+	return player_name
 
-	dimension = 0
-	clear_console()
-	player1_name=input("Give us your name...")
-
-	player2_name="Sanya"
-	player_count = input('Do You want to play against an another player (Y/N)? ').upper()
-	if player_count == "Y":
-		player_count=2
-		player2_name=input("What the name of your opponent?")
-		
-	else:
-		player_count=1	
-	while True:
-		dimension = 10 #int(input("How big of a map do you want (between 6-15)? "))
-
-		if dimension < 6 or 15 < dimension:
-			as_error('Invalid map size!')
-		else:
-			break
-
+def init_board(dimension):
 	board = []
 	for i in range(dimension):
 		board_row = []
@@ -365,25 +353,62 @@ def main():
 			board_row.append(-1)
 
 		board.append(board_row)
+	return board
 
-	user_board = copy.deepcopy(board)
-	user2_board = copy.deepcopy(board)
+def singleplayer(user_board,user2_board,ships):
+	player1_name=get_player(user_board,ships)
+	core(player1_name,"Computer",user_board,user2_board,ships)
+
+def multiplayer(user_board,user2_board,ships):
+	player1_name=get_player(user_board,ships)
+	player2_name=get_player(user2_board,ships)
+	core(player1_name,player2_name,user_board,user2_board,ships)
+
+def score_board():
+	pass
+
+def get_map_size():
+	while True:
+		dimension = 10 #int(input("How big of a map do you want (between 6-15)? "))
+
+		if dimension < 6 or 15 < dimension:
+			as_error('Invalid map size!')
+		else:
+			return dimension
+
+
+
+def main():
+	global player_count
+	ships = {
+		#"Aircraft Carrier" : 5,
+		#"Battleship" : 4,
+		#"Submarine" : 3,
+		#"Destroyer" : 3,
+		"Patrol" : 2
+	}
+	
+	dimension=get_map_size()
+
+	user_board =init_board(dimension)
+	user2_board =init_board(dimension)
 
 	user_board.append(copy.deepcopy(ships))
 	user2_board.append(copy.deepcopy(ships))
+	menu_option=main_screen()
 
-	user_board = user_place_ships(user_board, ships,player1_name)
-	clear_console()
+	if menu_option==1:
+		player_count=1
+		player1_name=singleplayer(user_board,user2_board,ships)
 
-	
-
-	if player_count == 2:
-		as_info(""+player2_name+" is placing the ships now.")
-		user2_board = user_place_ships(user2_board, ships, player2_name)
-		
+	elif menu_option==2:
+		player_count=2
+		multiplayer(user_board,user2_board,ships)
 	else:
-		user2_board = automatically_place_ships(user2_board, ships)
+		score_board()
 
+def core(player1_name,player2_name,user_board,user2_board,ships):
+	global is_cheating
 	while True:
 		clear_console()
 		as_info(""+player1_name+"'s turn")
@@ -440,7 +465,7 @@ def main():
 			for ship in user2_board[last_row_index].keys():
 				remaining_hits += ships[ship]
 
-			for x in range(len(board)):
+			for x in range(len(user_board)):
 				for y in range(len(user2_board[x])):
 					result = make_move(user2_board, x, y)
 

@@ -1,6 +1,6 @@
 import copy, random, os, sys
 from getpass import getpass
-
+from datetime import datetime
 abc = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P')
 
 is_cheating = False
@@ -47,6 +47,7 @@ def show_stats(opponent_board):
 	as_info("Match ended with {} round(s).".format(total_hit + total_miss))
 	as_error("You missed {} times.".format(total_miss))
 	as_info("You had {} hit.".format(total_hit))
+	return total_hit+total_miss
 
 def print_board(s, board, is_show_ship=False):
 	global is_cheating
@@ -321,14 +322,18 @@ def rematch():
 	if answer == "y":
 		main()
 
+def save_score(winning_player,all_rounds):
+	with open("score.txt","a") as f:
+		f.write(datetime.now().strftime("%Y/%m/%d %H:%M:%S")+" "+winning_player+" "+str(all_rounds)+"\n")
+
 def main():
 	global is_cheating
 	global player_count
 	ships = {
-		"Aircraft Carrier" : 5,
-		"Battleship" : 4,
-		"Submarine" : 3,
-		"Destroyer" : 3,
+		#"Aircraft Carrier" : 5,
+		#"Battleship" : 4,
+		#"Submarine" : 3,
+		#"Destroyer" : 3,
 		"Patrol" : 2
 	}
 
@@ -336,7 +341,7 @@ def main():
 	clear_console()
 	player1_name=input("Give us your name...")
 
-
+	player2_name="Sanya"
 	player_count = input('Do You want to play against an another player (Y/N)? ').upper()
 	if player_count == "Y":
 		player_count=2
@@ -389,9 +394,10 @@ def main():
 			print_board("c", user2_board, is_show_ship=False)
 			
 		user2_board = user_move(user2_board,player2_name)
-		if check_win(user2_board):
+		if check_win(user2_board,):
 			as_success(""+player1_name+" WON :)")
-			show_stats(user2_board)
+			all_rounds=show_stats(user2_board)
+			save_score(player1_name,all_rounds)
 			rematch()
 			break
 
@@ -409,11 +415,13 @@ def main():
 			user_board = computer_move(user_board)
 
 		if user_board == "WIN":
+			all_rounds=show_stats(user2_board)
 			if player_count==2:
+				save_score(player2_name,all_rounds)
 				as_success(""+player2_name +"have won :(")
 			else:
 				as_error("The Computer have won :(")
-			show_stats(user2_board)
+			
 			rematch()
 			break
 		if player_count ==2:

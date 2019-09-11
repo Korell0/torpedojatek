@@ -334,10 +334,13 @@ def main():
 
 	dimension = 0
 	clear_console()
-	
+	player1_name=input("Give us your name...")
+
+
 	player_count = input('Do You want to play against an another player (Y/N)? ').upper()
 	if player_count == "Y":
 		player_count=2
+		player2_name=input("What the name of your opponent?")
 		
 	else:
 		player_count=1	
@@ -364,60 +367,60 @@ def main():
 	user_board.append(copy.deepcopy(ships))
 	user2_board.append(copy.deepcopy(ships))
 
-	user_board = user_place_ships(user_board, ships,"User")
+	user_board = user_place_ships(user_board, ships,player1_name)
 	clear_console()
 
 	
 
 	if player_count == 2:
-		as_info("User 2 is placing the ships now.")
-		user2_board = user_place_ships(user2_board, ships, "User 2")
+		as_info(""+player2_name+" is placing the ships now.")
+		user2_board = user_place_ships(user2_board, ships, player2_name)
 		
 	else:
 		user2_board = automatically_place_ships(user2_board, ships)
 
 	while True:
 		clear_console()
-		as_info("User 1's turn")
+		as_info(""+player1_name+"'s turn")
 		
 		if player_count ==2:
-			print_board("User 2",user2_board,is_show_ship=False)
+			print_board(player2_name,user2_board,is_show_ship=False)
 		else:
 			print_board("c", user2_board, is_show_ship=False)
 			
-		user2_board = user_move(user2_board,"User 2")
+		user2_board = user_move(user2_board,player2_name)
 		if check_win(user2_board):
-			as_success("User 1 WON :)")
+			as_success(""+player1_name+" WON :)")
 			show_stats(user2_board)
 			rematch()
 			break
 
 		if player_count==2:
-			print_board("User 2",user2_board, is_show_ship=False)  
+			print_board(player2_name,user2_board, is_show_ship=False)  
 		else:
 			print_board("c", user2_board,is_show_ship=False)
 		input("Press ENTER to continue")
 		clear_console()
 		if player_count == 2:
-			as_info('Its User 2 turn!')
-			print_board("User",user_board)
-			user_board=user_move(user_board,"User")
+			as_info('Its '+player2_name +' turn!')
+			print_board(player1_name,user_board)
+			user_board=user_move(user_board,player1_name)
 		else:
 			user_board = computer_move(user_board)
 
 		if user_board == "WIN":
 			if player_count==2:
-				as_success("User 2 have won :(")
+				as_success(""+player2_name +"have won :(")
 			else:
 				as_error("The Computer have won :(")
 			show_stats(user2_board)
 			rematch()
 			break
 		if player_count ==2:
-			print_board("User", user_board,)
+			print_board(player1_name, user_board,)
 			should_cheat = getpass("Press ENTER to continue")
 		else:
-			print_board("User", user_board,is_show_ship=True)
+			print_board(player1_name, user_board,is_show_ship=True)
 			should_cheat = getpass("Press ENTER to continue")
 		if should_cheat.lower() == "map":
 			is_cheating = True

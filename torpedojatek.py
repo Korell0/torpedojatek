@@ -70,7 +70,7 @@ def print_board(s, board, is_show_ship=False):
 	if s != "c":
 		player = s	
 
-	print("The " + player + "'s table looks like this: \n")
+	print(player + "'s table looks like this: \n")
 
 	row_string = "   "
 	for i in range(dimension):
@@ -361,6 +361,7 @@ def singleplayer(user_board,user2_board,ships):
 
 def multiplayer(user_board,user2_board,ships):
 	player1_name=get_player(user_board,ships)
+	clear_console()
 	player2_name=get_player(user2_board,ships)
 	core(player1_name,player2_name,user_board,user2_board,ships)
 

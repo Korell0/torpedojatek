@@ -70,22 +70,15 @@ def print_board(s, board, is_show_ship=False):
 		for j in range(dimension):
 			if board[i][j] == -1:
 				row_string += "   "
-			elif s != "c":
-				if board[i][j] == "*":
-					row_string +=' ' + blue(board[i][j] + ' ')
-				elif board[i][j] == "$":
-					row_string +=' ' + red(board[i][j] + ' ')
-				else:
-					row_string += " " + board[i][j] + " "
-			elif s == "c":
-				if board[i][j] == "*":
-					row_string += ' '+ blue(board[i][j]+' ')
-				elif board[i][j] == "$":
-					row_string += ' '+ red(board[i][j]+' ')
-				elif is_cheating == True and board[i][j] != "   ":
-					row_string += ' '+ red(board[i][j]+' ')
-				else:
-					row_string += "   "
+			elif board[i][j] == "*":
+				row_string +=' ' + blue(board[i][j] + ' ')
+			elif board[i][j] == "$":
+				row_string +=' ' + red(board[i][j] + ' ')
+			elif is_show_ship ==True:
+				row_string += " " + board[i][j] + " "
+			else:
+				row_string += "   "
+			
 			
 			if j != (dimension - 1):
 				row_string += green(" | ")
@@ -116,7 +109,7 @@ def user_place_ships(board, ships, user_name):
 			if user_input.lower() == "y":
 				clear_console()
 				board = automatically_place_ships(board, without_keys(ships, placed_ships), "You")
-				print_board(user_name, board)
+				print_board(user_name, board,is_show_ship=True)
 				input("Press ENTER to continue")
 				return board
 	
@@ -126,7 +119,7 @@ def user_place_ships(board, ships, user_name):
 		while not valid:
 			clear_console()
 			
-			print_board(user_name, board)
+			print_board(user_name, board,is_show_ship=True)
 			as_info("Placing {} (length: {})".format(ship, ships[ship]))
 			x, y = get_coordinate(dimension)
 			ori = v_or_h()
@@ -140,12 +133,12 @@ def user_place_ships(board, ships, user_name):
 		clear_console()
 		board = place_ship(board, ships[ship], ship[0], ori, x, y)
 		placed_ships.append(ship)
-		print_board(user_name, board)
+		print_board(user_name, board,is_show_ship=True)
 		
 		
 	clear_console()
 	as_info("You placed all of your ships.")
-	print_board(user_name, board)
+	print_board(user_name, board,is_show_ship=True)
 	input("Press ENTER to start the game")
 	return board
 
@@ -384,9 +377,9 @@ def main():
 		as_info("User 1's turn")
 		
 		if player_count ==2:
-			print_board("User 2",user2_board)
+			print_board("User 2",user2_board,is_show_ship=False)
 		else:
-			print_board("c", user2_board)
+			print_board("c", user2_board, is_show_ship=False)
 			
 		user2_board = user_move(user2_board)
 		if check_win(user2_board):
@@ -396,9 +389,9 @@ def main():
 			break
 
 		if player_count==2:
-			print_board("User 2",user2_board)  
+			print_board("User 2",user2_board, is_show_ship=False)  
 		else:
-			print_board("c", user2_board)
+			print_board("c", user2_board,is_show_ship=False)
 		input("Press ENTER to continue")
 		clear_console()
 		if player_count == 2:

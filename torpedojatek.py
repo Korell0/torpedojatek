@@ -239,7 +239,7 @@ def make_move(board, x, y):
 	else:
 		return "hit"
 
-def user_move(board):
+def user_move(board,user_name):
 	dimension = len(board) - 1
 	while(True):
 		x, y = get_coordinate(dimension)
@@ -256,7 +256,10 @@ def user_move(board):
 			board[x][y] = "*"
 		elif res == "try again":
 			as_error("You alredy shot there! Try another place!")
-			print_board("c", board)
+			if player_count==2:
+				print_board(user_name, board)
+			else:
+				print_board("c", board)
 
 		if res != "try again":
 			return board
@@ -362,6 +365,7 @@ def main():
 	user2_board.append(copy.deepcopy(ships))
 
 	user_board = user_place_ships(user_board, ships,"User")
+	clear_console()
 
 	
 
@@ -381,7 +385,7 @@ def main():
 		else:
 			print_board("c", user2_board, is_show_ship=False)
 			
-		user2_board = user_move(user2_board)
+		user2_board = user_move(user2_board,"User 2")
 		if check_win(user2_board):
 			as_success("User 1 WON :)")
 			show_stats(user2_board)
@@ -396,8 +400,8 @@ def main():
 		clear_console()
 		if player_count == 2:
 			as_info('Its User 2 turn!')
-			print_board("User 2",user_board)
-			user_board=user_move(user_board)
+			print_board("User",user_board)
+			user_board=user_move(user_board,"User")
 		else:
 			user_board = computer_move(user_board)
 
@@ -409,10 +413,12 @@ def main():
 			show_stats(user2_board)
 			rematch()
 			break
-
-		print_board("User", user_board)
-		should_cheat = getpass("Press ENTER to continue")
-
+		if player_count ==2:
+			print_board("User", user_board,)
+			should_cheat = getpass("Press ENTER to continue")
+		else:
+			print_board("User", user_board,is_show_ship=True)
+			should_cheat = getpass("Press ENTER to continue")
 		if should_cheat.lower() == "map":
 			is_cheating = True
 		elif should_cheat.lower() == "god":

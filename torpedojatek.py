@@ -365,12 +365,38 @@ def multiplayer(user_board,user2_board,ships):
 	player2_name=get_player(user2_board,ships)
 	core(player1_name,player2_name,user_board,user2_board,ships)
 
-def score_board():
-	pass
+def show_score_board():
+	score_lines=list()
+	output=""
+	with open("score.txt","r")as f:
+		score_lines=f.read().splitlines()
+	score_collum_width=[0]*4
+	score_collum_width[2]=len("Player name")
+	score_collum_width[3]=len("Score")
+	for lines in score_lines:
+		cells=lines.split(" ")
+		for i in range(len(cells)):
+			if score_collum_width[i]<len(cells[i]):
+				score_collum_width[i]=len(cells[i])
+	output+="Date".rjust(score_collum_width[0])
+	output+=" | "
+	output+="Time".rjust(score_collum_width[1])
+	output+=" | "
+	output+="Player name".rjust(score_collum_width[2])
+	output+=" | "
+	output+="Score".rjust(score_collum_width[3])
+	output+=" | \n"
+	for line in score_lines:
+		parts=line.split(" ")
+		for i in range(len(parts)):
+			output+=parts[i].rjust(score_collum_width[i])
+			output+=" | "
+		output+="\n"
+	print(output)
 
 def get_map_size():
 	while True:
-		dimension = 10 #int(input("How big of a map do you want (between 6-15)? "))
+		dimension = int(input("How big of a map do you want (between 6-15)? "))
 
 		if dimension < 6 or 15 < dimension:
 			as_error('Invalid map size!')
@@ -382,31 +408,40 @@ def get_map_size():
 def main():
 	global player_count
 	ships = {
-		#"Aircraft Carrier" : 5,
-		#"Battleship" : 4,
-		#"Submarine" : 3,
-		#"Destroyer" : 3,
+		"Aircraft Carrier" : 5,
+		"Battleship" : 4,
+		"Submarine" : 3,
+		"Destroyer" : 3,
 		"Patrol" : 2
 	}
 	
-	dimension=get_map_size()
-
-	user_board =init_board(dimension)
-	user2_board =init_board(dimension)
-
-	user_board.append(copy.deepcopy(ships))
-	user2_board.append(copy.deepcopy(ships))
 	menu_option=main_screen()
 
 	if menu_option==1:
 		player_count=1
-		player1_name=singleplayer(user_board,user2_board,ships)
+		dimension=get_map_size()
+
+		user_board =init_board(dimension)
+		user2_board =init_board(dimension)
+
+		user_board.append(copy.deepcopy(ships))
+		user2_board.append(copy.deepcopy(ships))
+		singleplayer(user_board,user2_board,ships)
 
 	elif menu_option==2:
 		player_count=2
+		dimension=get_map_size()
+
+		user_board =init_board(dimension)
+		user2_board =init_board(dimension)
+
+		user_board.append(copy.deepcopy(ships))
+		user2_board.append(copy.deepcopy(ships))
 		multiplayer(user_board,user2_board,ships)
+	elif menu_option==3:
+		show_score_board()
 	else:
-		score_board()
+		as_error("Please choose a NUMBER between 1-3")
 
 def core(player1_name,player2_name,user_board,user2_board,ships):
 	global is_cheating
